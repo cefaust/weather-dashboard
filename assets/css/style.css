@@ -1,0 +1,10 @@
+* {
+  /* background-color: antiquewhite; */
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.main-header h1 {
+ text-align: center;
+ color: white;
+ background-color: blue;
+}
