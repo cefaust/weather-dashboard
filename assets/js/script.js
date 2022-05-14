@@ -20,7 +20,7 @@ async function handleFormSubmission(event) {
 
 //TODO: take input and place in open weather geocoding api
 function getGeocodeApiUrl(city) {
-  return `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${OPEN_WEATHER_API_KEY}`;
+  return `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${OPEN_WEATHER_API_KEY}`;
 }
 
 async function getLatLongFromCity(cityInput) {
@@ -86,6 +86,8 @@ function displayCurrentWeather(weather, cityName){
 }
 
 //TODO: The future conditions will display the date, an icon that represents the weather conditions, the temperature, the wind speed, and the humidity.
+
+// function DisplayFiveDayForcast
 
 
 function getTemp(kelvin) {
