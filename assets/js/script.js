@@ -76,10 +76,6 @@ async function getWeatherForCity(latLong) {
 
 //TODO: click on search history to display that city's weather.
 
-//TODO: display current weather to page
-
-//TODO:  The current conditions for that city will include  the date, an icon that represents the weather conditions.
-
 function displayCurrentWeather(weather, cityName) {
   var today = moment().format("M/D/YYYY")
   var tempRounded =
@@ -102,7 +98,12 @@ function displayCurrentWeather(weather, cityName) {
 
 //TODO: The future conditions will display the date, an icon that represents the weather conditions, the temperature, the wind speed, and the humidity.
 
-// function DisplayFiveDayForecast(weather)
+function DisplayFiveDayForecast(weather){
+
+
+}
+
+
 
 function getTemp(kelvin) {
   switch (weatherUnit) {
