@@ -1,7 +1,11 @@
 const OPEN_WEATHER_API_KEY = "2c3ea6a0e03a3e5e80c16d502c338408";
 const weatherUnit = "f";
 const speedUnit = "miles";
-const weatherIcon ="https://openweathermap.org/img/wn/@2x.png"
+var searchHistory = [];
+const listSearchHistoryEl = document.querySelector(".search-history");
+getSearchHistory();
+showSearchHistory();
+searchAndDisplayWeather("seattle");
 
 $("#search-form").submit(handleFormSubmission);
 
@@ -13,10 +17,17 @@ async function handleFormSubmission(event) {
     values[$(this).attr("id")] = $(this).val();
   });
   let cityInput = values["search-input"];
-  let cityLatLong = await getLatLongFromCity(cityInput);
+
+  searchAndDisplayWeather(cityInput);
+}
+
+async function searchAndDisplayWeather(city) {
+  let cityLatLong = await getLatLongFromCity(city);
   let weatherResponse = await getWeatherForCity(cityLatLong);
   displayCurrentWeather(weatherResponse, cityLatLong.name);
-  console.log("weatherResponse", weatherResponse);
+  displayFiveDayForecast(weatherResponse);
+  setSearchHistory(city);
+  showSearchHistory();
 }
 
 
@@ -70,14 +81,45 @@ async function getWeatherForCity(latLong) {
   return apiResponse;
 }
 
-//TODO: The city will then be added to a search history.
 
-//TODo: add the search to local storage.
+function showSearchHistory() {
+  listSearchHistoryEl.innerHTML = "";
+  console.log(searchHistory);
+  for (let i = 0; i < searchHistory.length; i++) {
+    let searchQuery = searchHistory[i];
+    let historyBtnEl = document.createElement("button")
+    historyBtnEl.classList.add("btn", "btn-info", "btn-block", "justify-center", "col-12", "col-md", "col-sm-12", "m-1");
+    historyBtnEl.textContent = searchQuery;
+    listSearchHistoryEl.appendChild(historyBtnEl);
+    historyBtnEl.addEventListener("click", function (event) {
+      searchAndDisplayWeather(searchQuery);
+    });
+  }
+}
 
-//TODO: click on search history to display that city's weather.
+
+function setSearchHistory(cityInput) {
+  if (!searchHistory.includes(cityInput)) {
+    searchHistory.unshift(cityInput);
+  }
+  if (searchHistory.length >= 8) {
+    searchHistory.pop();
+  }
+
+  localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
+}
+
+function getSearchHistory() {
+  let fromLocalStorage = localStorage.getItem("searchHistory")
+  if (fromLocalStorage === null) {
+    searchHistory = [];
+  } else {
+    searchHistory = JSON.parse(fromLocalStorage);
+  }
+}
 
 function displayCurrentWeather(weather, cityName) {
-  var today = moment().format("M/D/YYYY")
+  var today = moment.unix(weather.current.dt).format("M/D/YYYY");
   var tempRounded =
     Math.round((getTemp(weather.current.temp) + Number.EPSILON) * 100) / 100;
   var windRounded =
@@ -96,14 +138,35 @@ function displayCurrentWeather(weather, cityName) {
     weather.current.uvi;
 }
 
-//TODO: The future conditions will display the date, an icon that represents the weather conditions, the temperature, the wind speed, and the humidity.
 
-function DisplayFiveDayForecast(weather){
+function displayFiveDayForecast(weather) {
+  const forecastContainer = document.querySelector(".display-forecast");
+  forecastContainer.innerHTML = "";
 
+  for (let i = 1; i < 6; i++) {
+    const dailyForecast = weather.daily[i];
+    // console.log(dailyForecast);
+    var day = moment.unix(dailyForecast.dt).format("M/D/YYYY")
+    var tempRounded =
+      Math.round((getTemp(dailyForecast.temp.day) + Number.EPSILON) * 100) /
+      100;
+    var windRounded =
+      Math.round(
+        (getWindSpeed(dailyForecast.wind_speed) + Number.EPSILON) * 100
+      ) / 100;
 
+    let forecastDiv = document.createElement("div");
+    forecastDiv.classList.add("col-12", "col-md", "col-sm-12", "forecast-single-day");
+    forecastDiv.innerHTML = `
+      <h4> ${day}</h4>
+      <p> <img src="https://openweathermap.org/img/wn/${dailyForecast.weather[0].icon}@2x.png"></p>
+      <p>Temp: ${tempRounded} &deg;F</p>
+      <p>Wind: ${windRounded} MPH</p>
+      <p>Humidity: ${dailyForecast.humidity} % </p>
+    `;
+    forecastContainer.appendChild(forecastDiv);
+  }
 }
-
-
 
 function getTemp(kelvin) {
   switch (weatherUnit) {

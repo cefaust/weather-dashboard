@@ -1,10 +1,14 @@
-* {
-  /* background-color: antiquewhite; */
-  font-family: Arial, Helvetica, sans-serif;
+body, html {
+    background-color: rgb(25, 135, 84);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .main-header h1 {
- text-align: center;
- color: white;
- background-color: blue;
+    text-align: center;
+    color: white;
 }
+
+.forecast-single-day {
+    font-size: 12px;
+}
+
